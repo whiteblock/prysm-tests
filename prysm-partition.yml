@@ -5,88 +5,39 @@ services:
       cpus: 4
       memory: 4 GB
       storage: 10 GiB
+    script:
+      inline: | 
+        /app/beacon-chain/image.binary 
+        --datadir=/data 
+        --interop-num-validators=1024 
+        --no-discovery 
+        --interop-eth1data-votes 
+        --enable-attestation-cache
+        --enable-ssz-cache
+        --enable-skip-slots-cache 
+sidecars:
   - name: validator
-    image: gcr.io/prysmaticlabs/prysm/validator:latest-debug
+    image: gcr.io/prysmaticlabs/prysm/validator:latest
+    sidecar-to: [ "beacon-node" ]
     resources:
       cpus: 1
       memory: 1 GB
       storage: 1 GiB
-  - name: beacon-node2
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest-debug
-    resources:
-      cpus: 4
-      memory: 4 GB
-      storage: 10 GiB
-  - name: validator2
-    image: gcr.io/prysmaticlabs/prysm/validator:latest-debug
-    resources:
-      cpus: 1
-      memory: 1 GB
-      storage: 1 GiB
+    script:
+      inline: |
+        sleep 120 && 
+        /app/validator/image.binary 
+        --keymanager=interop
+        --keymanageropts='{"keys":1024}'
+        --beacon-rpc-provider=$SERVICE:4000
+
 tests:
-  - name: simple-prysm-exercise
-    description: "run a prysm testnet and validate some blocks"
-    wait-for: 1 m #wait for this amount of time before starting validators
+  - name: prysm-partition
+    description: "run a prysm testnet and implement a network partition"
+    wait-for: infinite 
     system:
       - type: beacon-node
-        count: 1
+        count: 10
         resources:
            networks:
-             - name: common-network
-      - type: beacon-node2
-        count: 1
-        resources:
-           networks:
-             - name: common-network
-    phases:
-      - name: validators
-        system:
-        - type: validator
-          count: 1
-          resources:
-             networks:
-               - name: common-network
-        - type: validator2
-          count: 1
-          resources:
-             networks:
-               - name: common-network
-      - name: partition
-        description: partition the nodes
-        system:
-          - type: beacon-node
-            resources:
-              networks:
-                - name: common-network
-          - type: beacon-node2
-            resources:
-              networks:
-                - name: common-network2
-          - type: validator
-            resources:
-              networks:
-                - name: common-network
-          - type: validator2
-            resources:
-              networks:
-                - name: common-network2
-        duration: 5 m
-      - name: merge
-        system:
-          - type: beacon-node
-            resources:
-              networks:
-                - name: common-network
-          - type: beacon-node2
-            resources:
-              networks:
-                - name: common-network
-          - type: validator
-            resources:
-              networks:
-                - name: common-network
-          - type: validator2
-            resources:
-              networks:
-                - name: common-network
-        duration: 5 m
+             - name: network-1
