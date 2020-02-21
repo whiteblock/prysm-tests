@@ -48,7 +48,7 @@ tests:
             - name: network-1
     phases:
       - name: start-validator
-        duration: 2m
+        duration: 1m
         system:
         - type: validator
           count: 20
