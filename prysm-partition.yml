@@ -28,8 +28,6 @@ services:
     input-files:
     - source-path: ./prometheus.yaml
       destination-path: /etc/prometheus/prometheus.yml
-    port-mappings:
-    - 9090:9090
 
   - name: validator
     image: gcr.io/whiteblock/validator:buttchug
@@ -50,6 +48,12 @@ tests:
           networks:
             - name: network-1
       - type: postgres
+        resources:
+          networks:
+            - name: network-1
+      - type: prometheus
+        port-mappings:
+          - 9090:9090
         resources:
           networks:
             - name: network-1
