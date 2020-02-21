@@ -1,35 +1,22 @@
 services:
   - name: beacon-node
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest-debug
+    image: gcr.io/whiteblock/beacon:buttchug
     resources:
       cpus: 4
       memory: 4 GB
       storage: 10 GiB
     script:
-      inline: | 
-        /app/beacon-chain/image.binary 
-        --datadir=/data 
-        --interop-num-validators=1024 
-        --no-discovery 
-        --interop-eth1data-votes 
-        --enable-attestation-cache
-        --enable-ssz-cache
-        --enable-skip-slots-cache 
+      inline: /app/beacon-chain/image.binary --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache 
 sidecars:
   - name: validator
-    image: gcr.io/prysmaticlabs/prysm/validator:latest
+    image: gcr.io/whiteblock/validator:buttchug
     sidecar-to: [ "beacon-node" ]
     resources:
       cpus: 1
       memory: 1 GB
       storage: 1 GiB
     script:
-      inline: |
-        sleep 120 && 
-        /app/validator/image.binary 
-        --keymanager=interop
-        --keymanageropts='{"keys":1024}'
-        --beacon-rpc-provider=$SERVICE:4000
+      inline: sleep 120 && /app/validator/image.binary --keymanager=interop --keymanageropts='{"keys":1024}' --beacon-rpc-provider=$SERVICE:4000
 
 tests:
   - name: prysm-partition
