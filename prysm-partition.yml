@@ -23,6 +23,13 @@ services:
       POSTGRES_DB: genesis
       POSTGRES_USER: genesis
       POSTGRES_PASSWORD: genesis
+  - name: prometheus
+    image: prom/prometheus
+    input-files:
+    - source-path: ./prometheus.yaml
+      destination-path: /etc/prometheus/prometheus.yml
+    port-mappings:
+    - 9090:9090
 
   - name: validator
     image: gcr.io/whiteblock/validator:buttchug
