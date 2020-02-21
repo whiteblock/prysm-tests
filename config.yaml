@@ -29,6 +29,6 @@ indexer:
   fullIndexOnStartup: false # Perform a one time full db index on startup
   indexMissingEpochsOnStartup: false # Check for missing epochs and export them after startup
   node:
-    host: "beacon-node-service0" # Address of the backend node
+    host: "10.4.0.3" # Address of the backend node
     port: "4000" # port of the backend node
     type: "prysm" # can be either prysm or lighthouse

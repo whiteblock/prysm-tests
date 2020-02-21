@@ -9,11 +9,11 @@ services:
       inline: /app/beacon-chain/image.binary --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache 
   - name: explorer
     image: gobitfly/eth2-beaconchain-explorer
+    script:
+      inline: /app/explorer -config=/var/explorer/config.yaml
     input-files:
     - source-path: ./config.yaml
       destination-path: /var/explorer/config.yaml
-    args:
-      - '-config=/var/explorer/config.yaml'
   - name: postgres
     image: postgres
     input-files:
@@ -47,7 +47,7 @@ tests:
           networks:
             - name: network-1
     phases:
-      - name: start-printer
+      - name: start-validator
         duration: 2m
         system:
         - type: validator
