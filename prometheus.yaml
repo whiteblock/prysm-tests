@@ -20,6 +20,12 @@ scrape_configs:
       - targets: ['localhost:9090']
 
 
-  - job_name: 'buttchug'
+  - job_name: 'beacon-chain'
     static_configs:
-      - targets: ['beacon-node-service9:8080']
+      - targets:
+        - beacon-node-service1:8080
+
+  - job_name: 'validator'
+    static_configs:
+      - targets:
+        - beacon-node-service1-validator:8080
