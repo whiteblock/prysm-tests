@@ -7,24 +7,31 @@ services:
       storage: 10 GiB
     script:
       inline: /app/beacon-chain/image.binary --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache 
-sidecars:
   - name: validator
     image: gcr.io/whiteblock/validator:buttchug
-    sidecar-to: [ "beacon-node" ]
     resources:
       cpus: 1
       memory: 1 GB
       storage: 1 GiB
     script:
-      inline: sleep 120 && /app/validator/image.binary --keymanager=interop --keymanageropts='{"keys":1024}' --beacon-rpc-provider=$SERVICE:4000
-
+      inline: /app/validator/image.binary --keymanager=interop --keymanageropts='{"keys":1024}' --beacon-rpc-provider=$_one_of(beacon-node,network-1):4000
 tests:
   - name: prysm-partition
     description: "run a prysm testnet and implement a network partition"
-    wait-for: infinite 
+    wait-for: 2m 
     system:
       - type: beacon-node
-        count: 10
+        count: 4
         resources:
            networks:
              - name: network-1
+    phases:
+      - name: start-printer
+        duration: infinite
+        system:
+        - type: validator
+          count: 40
+          resources: 
+            networks:
+            - name: network-1
+
