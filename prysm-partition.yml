@@ -6,7 +6,7 @@ services:
       memory: 4 GB
       storage: 10 GiB
     script:
-      inline: /app/beacon-chain/image.binary --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache 
+      inline: /app/beacon-chain/image.binary --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache
   - name: explorer
     image: gobitfly/eth2-beaconchain-explorer
     input-files:
@@ -42,7 +42,7 @@ services:
 tests:
   - name: prysm-partition
     description: "run a prysm testnet and implement a network partition"
-    wait-for: 2m 
+    wait-for: 2m
     system:
       - type: beacon-node
         count: 2
@@ -59,15 +59,13 @@ tests:
         system:
         - type: validator
           count: 20
-          resources: 
+          resources:
             networks:
             - name: network-1
       - name: explorer
         duration: infinite
         system:
         - type: explorer
-          resources: 
+          resources:
             networks:
             - name: network-1
-
-
