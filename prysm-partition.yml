@@ -26,7 +26,6 @@ services:
         --enable-attestation-cache
         --enable-ssz-cache
         --enable-skip-slots-cache
-        --bootstrap-node /dns4/bootnode-service0/tcp/4500/p2p/16Uiu2HAmFqaBuKYvjubCx8QoUEr1gxR4hWU9MxFMUmz2MNqzMD9Q/5w==
   - name: explorer
     image: gobitfly/eth2-beaconchain-explorer
     script:
