@@ -19,12 +19,23 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+        # TODO: sed replace HOSTNAME with biome ip addr on container start
+        - HOSTNAME:8080
 
   - job_name: 'beacon-chain'
     static_configs:
       - targets:
         - beacon-node-service0:8080
         - beacon-node-service1:8080
+      # support queries like this:
+      #   irate(process_cpu_seconds_total{instance="beacon-chain"}[5m])
+      #   go_memstats_alloc_bytes{component="beacon-chain"}
+      - labels:
+          component: beacon-chain
+          instance: beacon-chain
 
   - job_name: 'validator'
     static_configs:
