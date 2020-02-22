@@ -28,6 +28,9 @@ services:
     input-files:
     - source-path: ./prometheus.yaml
       destination-path: /etc/prometheus/prometheus.yml
+    script:
+      # XXX: this probably doesn't work the first time...
+      inline: sed -i 's/HOSTNAME/$_host' /etc/prometheus/prometheus.yml && /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles
 
   - name: validator
     image: gcr.io/whiteblock/validator:buttchug
