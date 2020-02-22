@@ -1,4 +1,11 @@
 services:
+  - name: bootnode
+    image: gcr.io/whiteblock/bootnode:buttchug
+    resources:
+      cpus: 2
+      memory: 4 GB
+    script:
+      inline: /app/tools/bootnode/image.binary --external-ip 0.0.0.0 --private 3a26b674e9c0c849c43881bf5ac4a8f34b882ac94742869d668bff52825ac1c2
   - name: beacon-node
     image: gcr.io/whiteblock/beacon:buttchug
     resources:
@@ -6,7 +13,7 @@ services:
       memory: 4 GB
       storage: 10 GiB
     script:
-      inline: /app/beacon-chain/image.binary --archive --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache
+      inline: /app/beacon-chain/image.binary --archive --datadir=/data --interop-num-validators=1024 --no-discovery --interop-eth1data-votes --enable-attestation-cache --enable-ssz-cache --enable-skip-slots-cache --bootstrap-node /dns4/bootnode-service0/tcp/4500/p2p/16Uiu2HAmFqaBuKYvjubCx8QoUEr1gxR4hWU9MxFMUmz2MNqzMD9Q/5w==
   - name: explorer
     image: gobitfly/eth2-beaconchain-explorer
     script:
@@ -42,24 +49,31 @@ services:
 tests:
   - name: prysm-partition
     description: "run a prysm testnet and implement a network partition"
-    wait-for: 90s
+    wait-for: 30s
     system:
-      - type: beacon-node
-        count: 2
-        resources:
-          networks:
-            - name: network-1
-      - type: postgres
-        resources:
-          networks:
-            - name: network-1
-      - type: prometheus
-        port-mappings:
-          - 9090:9090
-        resources:
-          networks:
-            - name: network-1
+    - type: bootnode
+      resources:
+        networks:
+          - name: network-1
     phases:
+      - name: beacons
+        duration: 90s
+        system:
+        - type: beacon-node
+          count: 2
+          resources:
+            networks:
+              - name: network-1
+        - type: postgres
+          resources:
+            networks:
+              - name: network-1
+        - type: prometheus
+          port-mappings:
+            - 9090:9090
+          resources:
+            networks:
+              - name: network-1
       - name: start-validator
         duration: 1m
         system:
