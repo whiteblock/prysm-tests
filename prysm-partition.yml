@@ -29,8 +29,8 @@ services:
     - source-path: ./prometheus.yaml
       destination-path: /etc/prometheus/prometheus.yml
     script:
-      # XXX: this probably doesn't work the first time...
-      inline: sed -i 's/HOSTNAME/$_host/' /etc/prometheus/prometheus.yml && /bin/prometheus --config.file /etc/prometheus/prometheus.yml
+      # soo hacky thx n8wb for this
+      inline: sed -i "s/HOSTNAME/$(wget -qO- ifconfig.co)/" /etc/prometheus/prometheus.yml && /bin/prometheus --config.file /etc/prometheus/prometheus.yml
   - name: validator
     image: gcr.io/whiteblock/validator:buttchug
     resources:

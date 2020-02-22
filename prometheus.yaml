@@ -5,7 +5,7 @@ global:
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
     # TODO: get hostname and use it for external labels
-    monitor: 'biome-41f27bfa-ee50-477b-aa28-940a69b364f6-0'
+    monitor: 'HOSTNAME'
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -22,8 +22,7 @@ scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
       - targets:
-        # TODO: sed replace HOSTNAME with biome ip addr on container start
-        - HOSTNAME:8080
+        - HOSTNAME:4194
 
   - job_name: 'beacon-chain'
     static_configs:
