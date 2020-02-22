@@ -1,0 +1,51 @@
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    # TODO: get hostname and use it for external labels
+    monitor: 'HOSTNAME'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+        - HOSTNAME:4194
+
+  - job_name: 'beacon-chain'
+    static_configs:
+      - targets:
+        - beacon-node-service0:8080
+        - beacon-node-service1:8080
+
+  - job_name: 'validator'
+    static_configs:
+      - targets:
+        - validator-service0:8080
+        - validator-service1:8080
+        - validator-service2:8080
+        - validator-service3:8080
+        - validator-service4:8080
+        - validator-service5:8080
+        - validator-service6:8080
+        - validator-service7:8080
+        - validator-service8:8080
+        - validator-service9:8080
+        - validator-service10:8080
+        - validator-service11:8080
+        - validator-service12:8080
+        - validator-service13:8080
+        - validator-service14:8080
+        - validator-service15:8080
